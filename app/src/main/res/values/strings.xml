@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Car Browser</string>
+
+    <!-- Toolbar -->
+    <string name="back">Back</string>
+    <string name="forward">Forward</string>
+    <string name="reload">Reload</string>
+    <string name="stop">Stop</string>
+    <string name="home">Home</string>
+    <string name="menu">Menu</string>
+    <string name="url_hint">Search or type a web address</string>
+
+    <!-- Menu -->
+    <string name="menu_bookmark">Add bookmark</string>
+    <string name="menu_unbookmark">Remove bookmark</string>
+    <string name="menu_bookmarks">Bookmarks</string>
+    <string name="menu_desktop">Desktop site</string>
+    <string name="menu_text_size">Text size</string>
+    <string name="menu_search_engine">Search engine</string>
+    <string name="menu_downloads">Downloads</string>
+    <string name="menu_apps">Apps &amp; settings</string>
+    <string name="menu_clear">Clear browsing data</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_exit">Exit</string>
+
+    <!-- Bookmarks -->
+    <string name="bookmarks_title">Bookmarks (long-press one to remove it)</string>
+    <string name="bookmarks_empty">No bookmarks yet</string>
+    <string name="bookmark_added">Bookmarked</string>
+    <string name="bookmark_removed">Bookmark removed</string>
+    <string name="bookmark_remove_q">Remove \"%1$s\"?</string>
+    <string name="remove">Remove</string>
+
+    <!-- Common -->
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="ok">OK</string>
+    <string name="later">Later</string>
+    <string name="loading">Loading…</string>
+    <string name="not_available">Not available on this device</string>
+    <string name="no_app">No app on this device can open that link</string>
+    <string name="no_internet">Can\'t reach the internet. Check Wi-Fi or your phone hotspot.</string>
+    <string name="cleared">Browsing data cleared</string>
+    <string name="clear_q">Clear history, cookies, cache and saved site data? You will be signed out of websites.</string>
+    <string name="clear">Clear</string>
+
+    <!-- Certificates -->
+    <string name="ssl_title">Security warning</string>
+    <string name="ssl_msg">The security certificate of %1$s could not be verified.\n\nOn older car screens this can happen even on safe sites, because the screen\'s list of trusted certificates is out of date.\n\nOnly continue if you trust this site, and don\'t type passwords or card numbers.</string>
+    <string name="ssl_continue">Continue anyway</string>
+    <string name="ssl_back">Go back</string>
+
+    <!-- Clock -->
+    <string name="clock_title">Check date &amp; time</string>
+    <string name="clock_msg">This screen\'s clock says %1$s.\n\nSecure websites (Google, YouTube…) will refuse to load until the date and time are correct.</string>
+    <string name="clock_fix">Open date settings</string>
+
+    <!-- Location -->
+    <string name="location_title">Location</string>
+    <string name="location_msg">Allow %1$s to use this device\'s location?</string>
+    <string name="allow">Allow</string>
+    <string name="block">Block</string>
+
+    <!-- Downloads -->
+    <string name="download_q_title">Download file?</string>
+    <string name="download">Download</string>
+    <string name="downloading">Downloading…</string>
+    <string name="download_unsupported">This kind of download isn\'t supported</string>
+    <string name="download_failed">Download failed</string>
+    <string name="download_saved">Saved to Downloads: %1$s</string>
+    <string name="download_started">Download started — see the notification</string>
+    <string name="install_q_title">Download complete</string>
+    <string name="install_q">%1$s was downloaded. Install it now?</string>
+    <string name="install">Install</string>
+    <string name="open">Open</string>
+    <string name="install_failed">Couldn\'t open the installer. Open Downloads and tap the file.</string>
+
+    <!-- Text size / search -->
+    <string name="text_size_title">Text size</string>
+    <string name="search_engine_title">Search engine</string>
+
+    <!-- Apps screen -->
+    <string name="apps_title">Apps &amp; settings</string>
+    <string name="apps_section_settings">Settings shortcuts</string>
+    <string name="apps_section_apps">All apps on this screen (including hidden ones)</string>
+    <string name="apps_hint">Tap to open. Long-press for app info.</string>
+    <string name="apps_section_disabled">Disabled apps</string>
+    <string name="apps_disabled_hint">These apps are installed but switched off. Tap one, then press \"Enable\".</string>
+
+    <string name="s_all">All settings</string>
+    <string name="s_wifi">Wi-Fi</string>
+    <string name="s_security">Security\n(Unknown sources)</string>
+    <string name="s_developer">Developer options</string>
+    <string name="s_apps">Manage apps</string>
+    <string name="s_date">Date &amp; time</string>
+    <string name="s_language">Keyboard &amp; input</string>
+    <string name="s_display">Display</string>
+    <string name="s_sound">Sound</string>
+    <string name="s_bluetooth">Bluetooth</string>
+    <string name="s_storage">Storage</string>
+    <string name="s_about">About device</string>
+    <string name="s_downloads">Downloads</string>
+
+    <!-- Help -->
+    <string name="help_title">Car Browser</string>
+    <string name="help_text">Version %1$s\n\n• Type in the top bar to search or open a website.\n• Menu → Desktop site shows the full computer version of a site (nice on wide screens).\n• Menu → Text size makes pages easier to read.\n• The grid button opens every app on this screen, including ones the car hides, plus shortcuts into Android settings.\n• If a heavy site (like YouTube) doesn\'t work here, tap \"Get Firefox\" on the home page. It installs a separate browser with a newer engine.\n\nOnly use the browser while parked.</string>
+</resources>
