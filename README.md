@@ -93,7 +93,13 @@ else.
    often shown as *USB storage*, *USB drive*, `udisk` or `usbhost`.
    * If you see an **Explore**, **Browse** or **Open** button, tap it.
    * Browse to **CarBrowser.apk** and tap it. Android's installer opens → **Install** → **Open**.
-4. If *Storage* won't open the stick or won't show files, go to **A2** or **D**.
+4. **No Explore button?** That button only exists on real Android 6+, and many of these
+   screens are really Android 4.4. Instead, tap the **Audio**, **Pictures, videos** or
+   **Downloads** rows in *Storage*. If a "Complete action using" list pops up and includes
+   **ES File Explorer** (or another file manager), choose it with **Just once**. Hidden apps
+   still show up in that list. Then browse to the USB stick and tap **CarBrowser.apk**.
+5. Ignore *Security → Install from SD card*: it only installs certificates, not apps.
+6. If none of that opens the stick, go to **A2** or **D**.
 
 This works because the file browser Android opens from inside *Storage* is part of the
 system, so the car's launcher can't hide it.
