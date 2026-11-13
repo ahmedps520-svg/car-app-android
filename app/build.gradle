@@ -11,8 +11,8 @@ android {
         // Android 4.1+. Car head units like the Rockchip PX3 run Android 4.4 (API 19).
         minSdk 16
         targetSdk 34
-        versionCode 1
-        versionName '1.0'
+        versionCode 2
+        versionName '1.1'
     }
 
     // A fixed key that lives in this repo, so every build (local or CI) can be

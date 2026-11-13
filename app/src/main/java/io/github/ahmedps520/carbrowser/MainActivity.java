@@ -69,6 +69,7 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
     private static final int M_CLEAR = 8;
     private static final int M_HELP = 9;
     private static final int M_EXIT = 10;
+    private static final int M_FLOATING = 11;
 
     private WebView web;
     private EditText urlBar;
@@ -143,6 +144,7 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
             else loadHome();
         }
         if (clockLooksWrong()) onClockProblem();
+        if (!prefs.floatingButtonAsked()) askFloatingButton();
     }
 
     // ---------------------------------------------------------------------------------------
@@ -431,6 +433,7 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
         m.add(0, M_DOWNLOADS, 0, R.string.menu_downloads);
         m.add(0, M_APPS, 0, R.string.menu_apps);
         m.add(0, M_CLEAR, 0, R.string.menu_clear);
+        m.add(0, M_FLOATING, 0, R.string.menu_floating).setCheckable(true).setChecked(prefs.floatingButton());
         m.add(0, M_HELP, 0, R.string.menu_help);
         m.add(0, M_EXIT, 0, R.string.menu_exit);
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -462,6 +465,9 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
                         return true;
                     case M_CLEAR:
                         confirmClear();
+                        return true;
+                    case M_FLOATING:
+                        setFloatingButton(!prefs.floatingButton());
                         return true;
                     case M_HELP:
                         showHelp();
@@ -628,6 +634,45 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
                 .show();
     }
 
+    /** Asked once: car launchers often hide new apps, and this button is a way back in. */
+    private void askFloatingButton() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.floating_title)
+                .setMessage(R.string.floating_msg)
+                .setPositiveButton(R.string.floating_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface d, int which) {
+                        setFloatingButton(true);
+                    }
+                })
+                .setNegativeButton(R.string.floating_no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface d, int which) {
+                        setFloatingButton(false);
+                    }
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+    private void setFloatingButton(boolean on) {
+        prefs.setFloatingButton(on);
+        if (on && !FloatingButtonService.canDrawOverlays(this)) {
+            // Android 6+: the user has to allow "draw over other apps" first.
+            // The button starts in onResume once they come back.
+            Toast.makeText(this, R.string.floating_permission, Toast.LENGTH_LONG).show();
+            try {
+                startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName())));
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        FloatingButtonService.sync(this);
+        if (on) Toast.makeText(this, R.string.floating_on, Toast.LENGTH_LONG).show();
+    }
+
     @Override
     public void onClockProblem() {
         if (clockDialogShown || isFinishing()) return;
@@ -763,6 +808,8 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
     @SuppressWarnings("deprecation")
     protected void onResume() {
         super.onResume();
+        FloatingButtonService.setAppInForeground(true);
+        FloatingButtonService.sync(this);
         if (Build.VERSION.SDK_INT < 21) CookieSyncManager.getInstance().startSync();
     }
 
@@ -772,6 +819,7 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
     @SuppressWarnings("deprecation")
     protected void onPause() {
         super.onPause();
+        FloatingButtonService.setAppInForeground(false);
         flushCookies();
         if (Build.VERSION.SDK_INT < 21) CookieSyncManager.getInstance().stopSync();
     }

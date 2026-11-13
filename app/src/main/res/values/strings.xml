@@ -21,8 +21,19 @@
     <string name="menu_downloads">Downloads</string>
     <string name="menu_apps">Apps &amp; settings</string>
     <string name="menu_clear">Clear browsing data</string>
+    <string name="menu_floating">Floating button</string>
     <string name="menu_help">Help</string>
     <string name="menu_exit">Exit</string>
+
+    <!-- Floating button -->
+    <string name="floating_title">Add a floating button?</string>
+    <string name="floating_msg">Many car screens hide new apps from their home screen. A small round Car Browser button can float on top of the car\'s screens so you can always open it (and, from its grid button, every hidden app).\n\nTap it to open Car Browser, drag it to move it. You can turn it off later in the menu.</string>
+    <string name="floating_yes">Add button</string>
+    <string name="floating_no">No thanks</string>
+    <string name="floating_on">Floating button is on. It shows up when you leave Car Browser; drag it anywhere.</string>
+    <string name="floating_permission">Allow Car Browser to \"display over other apps\", then come back</string>
+    <string name="floating_channel">Floating button</string>
+    <string name="floating_notification">Floating button is on</string>
 
     <!-- Bookmarks -->
     <string name="bookmarks_title">Bookmarks (long-press one to remove it)</string>
@@ -104,5 +115,5 @@
 
     <!-- Help -->
     <string name="help_title">Car Browser</string>
-    <string name="help_text">Version %1$s\n\n• Type in the top bar to search or open a website.\n• Menu → Desktop site shows the full computer version of a site (nice on wide screens).\n• Menu → Text size makes pages easier to read.\n• The grid button opens every app on this screen, including ones the car hides, plus shortcuts into Android settings.\n• If a heavy site (like YouTube) doesn\'t work here, tap \"Get Firefox\" on the home page. It installs a separate browser with a newer engine.\n\nOnly use the browser while parked.</string>
+    <string name="help_text">Version %1$s\n\n• Type in the top bar to search or open a website.\n• Menu → Desktop site shows the full computer version of a site (nice on wide screens).\n• Menu → Text size makes pages easier to read.\n• Menu → Floating button puts a Car Browser button over the car\'s own screens.\n• The grid button opens every app on this screen, including ones the car hides, plus shortcuts into Android settings.\n• If a heavy site (like YouTube) doesn\'t work here, tap \"Get Firefox\" on the home page. It installs a separate browser with a newer engine.\n\nOnly use the browser while parked.</string>
 </resources>

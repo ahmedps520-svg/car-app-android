@@ -47,7 +47,39 @@ Try **A** first. If that's blocked, use **B** (laptop) or **C** (phone).
 **"Install blocked"?** Tap **Settings** in that message (or go to
 *Settings → Security*), tick **Unknown sources**, press OK, then tap the APK again.
 
-**No file manager at all?** Go to B or C.
+**File manager hidden or missing?** That's very common. See A2.
+
+### A2. The car hides the file manager and the browser
+
+Car launchers often hide apps that are installed, such as *ES File Explorer* and
+*Browser*. The car's **Setting** app is enough to get around that. Try these, quickest first:
+
+1. **Maybe they're only switched off.** Go to *Settings → Apps* and swipe to the **ALL**
+   tab. Find *ES File Explorer* and *Browser*. If one says **Disabled**, tap it, then
+   **Enable**, and look in the car's app list again.
+2. **Borrow Android's normal home screen for a minute.** If the main *Settings* list has
+   an item called **Home**, tap it and choose the other launcher (often *Launcher* or
+   *Launcher3*). Its app drawer shows every app. Open **ES File Explorer**, then the USB
+   stick, then **CarBrowser.apk**, then **Install**. Afterwards go back to *Settings → Home*
+   and choose the car's launcher again.
+   * No *Home* item? Go to *Settings → Apps → ALL*, open the car's launcher app (often
+     called *Launcher*, *Home* or *CarLauncher*), tap **Clear defaults**, then press the
+     car's Home button. If Android asks which app to use, choose the other launcher and
+     **Just once**. If it doesn't ask, there's only one launcher, so skip this.
+3. **Use a USB keyboard shortcut to open the hidden browser.** Plug any USB keyboard into
+   the car and press **Windows key + B** (⌘ + B on a Mac keyboard). Android opens its
+   built-in browser even when the car hides it. Then:
+   1. In *Settings → Security*, tick **Unknown sources**.
+   2. Plug in the USB stick with CarBrowser.apk. If the car has only one USB port, swap
+      the keyboard for the stick and use the on-screen keyboard from here.
+   3. In the browser's address bar type `file:///mnt/` and press Go. Tap through the
+      folders to the USB stick: it's usually called `usb_storage`, `udisk` or
+      `usbhost`, or it's under `file:///storage/`. The car's Music or Video app may show the
+      stick's path. Tap **CarBrowser.apk**. Android's installer opens; tap **Install**.
+   4. Don't download the APK from GitHub in that browser. Android 4.4's built-in
+      downloader can't connect to modern HTTPS sites, so the download fails.
+4. **Over Wi‑Fi:** see B (laptop) or C (Android phone). These skip the car's apps entirely.
+5. **Factory menu:** some cars have an "app hide" list there. See D.
 
 ### B. Over Wi‑Fi with a laptop (works even when the screen is locked down)
 
@@ -93,7 +125,8 @@ install `CarBrowser.apk`. B's "failed to connect" tips apply here too.
 
 Many of these screens have a hidden *Factory settings* menu that needs a code.
 Codes people commonly report: `8888`, `1234`, `0000`, `3368`, `1617`, `126`. Some
-of these menus have a switch that allows installing apps. **Don't change anything
+of these menus have a switch that allows installing apps, or an "app hide" list where you
+can un-hide *ES File Explorer* and *Browser*. **Don't change anything
 else in there.** Car model, CAN-bus and screen settings can break your steering-wheel
 buttons, reversing camera or display.
 
@@ -102,7 +135,13 @@ buttons, reversing camera or display.
 ## Step 2: Open it
 
 * Right after installing, tap **Open**.
+* The first time it opens, Car Browser asks whether to add a **floating button**. Say
+  **yes** if the car's app list doesn't show Car Browser. A small round button then
+  floats over the car's screens. Tap it to open Car Browser; drag it to move it. You can
+  turn it off in *⋮ → Floating button*. It also comes back after the car restarts.
 * Look for **Car Browser** (blue globe icon) in the car screen's app list.
+* With a USB keyboard, **Windows key + B** opens it too. The first time, choose
+  *Car Browser* and *Always*.
 * **Car's home screen doesn't show it?** Copy `install/open-car-browser.html` to the USB
   stick, tap it in the file manager and choose **Car Browser**. Or use ADB:
   `adb shell am start -n io.github.ahmedps520.carbrowser/.MainActivity`
@@ -121,6 +160,7 @@ buttons, reversing camera or display.
   * **Desktop site:** loads the full computer version of sites. Good on wide car screens.
   * **Text size:** 75% to 200%.
   * **Search engine:** Google, DuckDuckGo or Bing.
+  * **Floating button:** a button over the car's own screens that opens Car Browser.
   * **Downloads**, **Clear browsing data**, **Help** and **Exit**.
 * **Downloads:** tapping a download link saves it to *Downloads*. If it's an app
   (`.apk`), Car Browser offers to install it. So once Car Browser is on the screen,
@@ -231,5 +271,6 @@ settings. Turn on **automatic date & time** if your unit has it.
 | `HomePage.java` | Generates the start page (ES5/old-CSS only, for the 2014 engine) |
 | `AppsActivity.java` | All apps (including hidden and disabled ones) plus Android settings shortcuts |
 | `SslHelper.java` / `Tls.java` | Re-checks certificates the old WebView rejects, using Mozilla's root list and Conscrypt |
+| `FloatingButtonService.java` / `BootReceiver.java` | Optional floating button over the car's launcher (which may hide the app), restored after reboot |
 | `Downloader.java` | Downloads (with modern TLS on Android < 7) and APK install prompts |
 | `Search.java` / `UserAgent.java` | Address-vs-search logic, desktop mode |

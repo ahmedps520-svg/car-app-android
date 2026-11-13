@@ -27,6 +27,10 @@ final class Prefs {
     private static final String KEY_TEXT_ZOOM = "text_zoom";
     private static final String KEY_DESKTOP = "desktop";
     private static final String KEY_ENGINE = "engine";
+    private static final String KEY_FLOATING = "floating_button";
+    private static final String KEY_FLOATING_ASKED = "floating_button_asked";
+    private static final String KEY_BUBBLE_X = "bubble_x";
+    private static final String KEY_BUBBLE_Y = "bubble_y";
 
     private final SharedPreferences sp;
 
@@ -123,5 +127,32 @@ final class Prefs {
 
     void setEngine(String engine) {
         sp.edit().putString(KEY_ENGINE, engine).apply();
+    }
+
+    // ---- Floating button ----
+
+    boolean floatingButton() {
+        return sp.getBoolean(KEY_FLOATING, false);
+    }
+
+    void setFloatingButton(boolean on) {
+        sp.edit().putBoolean(KEY_FLOATING, on).putBoolean(KEY_FLOATING_ASKED, true).apply();
+    }
+
+    boolean floatingButtonAsked() {
+        return sp.getBoolean(KEY_FLOATING_ASKED, false);
+    }
+
+    /** Saved position of the floating button, or -1 if never moved. */
+    int bubbleX() {
+        return sp.getInt(KEY_BUBBLE_X, -1);
+    }
+
+    int bubbleY() {
+        return sp.getInt(KEY_BUBBLE_Y, -1);
+    }
+
+    void setBubblePosition(int x, int y) {
+        sp.edit().putInt(KEY_BUBBLE_X, x).putInt(KEY_BUBBLE_Y, y).apply();
     }
 }
