@@ -31,7 +31,7 @@ many modern sites show security errors. Car Browser was built around all three p
 
 ## Step 1: Put the app on the car screen
 
-Try **A** first. If that's blocked, use **B** (laptop) or **C** (phone).
+Try **A** first. If that's blocked, use **B** (laptop) or **C** (just a phone, including an iPhone).
 
 ### A. With a USB stick (easiest)
 
@@ -114,12 +114,31 @@ adb install -r CarBrowser.apk
 adb shell am start -n io.github.ahmedps520.carbrowser/.MainActivity
 ```
 
-### C. Over Wi‑Fi with an Android phone (no laptop)
+### C. Over Wi‑Fi with just an iPhone, iPad or Android phone (no laptop)
 
-Same idea as B, but use an ADB app on your phone, for example **Bugjaeger** from the
-Play Store. Put the phone and the car screen on the same Wi‑Fi (the phone's hotspot
-is easiest). In the app, connect to the car screen's IP address with port `5555`, then
-install `CarBrowser.apk`. B's "failed to connect" tips apply here too.
+Same idea as B, but an ADB app on your phone does the laptop's job.
+* **iPhone / iPad:** **Bugjaeger – Mobile ADB** (App Store, iOS 15+; a few installs are
+  free, unlimited installs is a small in-app purchase), or **Wireless Debug** (iOS 17+).
+* **Android phone:** **Bugjaeger** from the Play Store.
+
+1. **On the car:** in *Settings → Developer options*, turn on **USB debugging**. To get
+   Developer options, tap *About device → Build number* 7 times. Also tick
+   *Settings → Security → Unknown sources*.
+2. **Same Wi‑Fi:** turn on your phone's **Personal Hotspot** and connect the car to it
+   in *Settings → Wi‑Fi*. Or put both on your home Wi‑Fi.
+3. **Car's IP address:** *Settings → About device → Status → IP address*. On an iPhone
+   hotspot it looks like `172.20.10.2`.
+4. **Get the APK onto the phone:** open the download link at the top of this page in
+   Safari, tap **Download**, and it lands in the Files app under *Downloads*.
+5. **In the ADB app:** connect to the car's IP address with port **`5555`**. When iOS asks
+   about devices on your local network, allow it. If the car asks *"Allow USB debugging?"*,
+   tick *Always allow* and press OK.
+6. **Install:** install `CarBrowser.apk` from Files. In Bugjaeger it's on the *Packages* tab
+   with the **+** button. Then open it from the app's shell by typing:
+   `am start -n io.github.ahmedps520.carbrowser/.MainActivity`
+
+**Can't connect at all ("connection refused")?** Then this car doesn't accept ADB
+over Wi‑Fi, even with USB debugging on, and you need A2 or D instead.
 
 ### D. Last resort: the factory menu
 
