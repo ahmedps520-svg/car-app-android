@@ -31,7 +31,7 @@ many modern sites show security errors. Car Browser was built around all three p
 
 ## Step 1: Put the app on the car screen
 
-Try **A** first. If that's blocked, use **B** (laptop) or **C** (just a phone, including an iPhone).
+Try **A** first. **If the file manager is hidden, jump to A3** (install using only the Setting app). **B** (laptop) and **C** (just a phone) need Developer options, which some units lock.
 
 ### A. With a USB stick (easiest)
 
@@ -80,6 +80,23 @@ Car launchers often hide apps that are installed, such as *ES File Explorer* and
       downloader can't connect to modern HTTPS sites, so the download fails.
 4. **Over Wi‑Fi:** see B (laptop) or C (Android phone). These skip the car's apps entirely.
 5. **Factory menu:** some cars have an "app hide" list there. See D.
+
+### A3. Install using ONLY the Setting app (no file manager, no ADB, no PIN)
+
+Your screen hides the file manager and locks Developer options, but Android's own
+**Setting** app can still open a file on a USB stick and install it. This needs nothing
+else.
+
+1. Copy `CarBrowser.apk` onto a FAT32 USB stick and plug it into the car.
+2. **Setting → Security → Unknown sources** → turn it **on**.
+3. **Setting → Storage** (some units call it *Storage & USB*). Look for your USB stick,
+   often shown as *USB storage*, *USB drive*, `udisk` or `usbhost`.
+   * If you see an **Explore**, **Browse** or **Open** button, tap it.
+   * Browse to **CarBrowser.apk** and tap it. Android's installer opens → **Install** → **Open**.
+4. If *Storage* won't open the stick or won't show files, go to **A2** or **D**.
+
+This works because the file browser Android opens from inside *Storage* is part of the
+system, so the car's launcher can't hide it.
 
 ### B. Over Wi‑Fi with a laptop (works even when the screen is locked down)
 
