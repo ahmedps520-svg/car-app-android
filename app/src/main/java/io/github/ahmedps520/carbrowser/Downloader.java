@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -181,21 +183,20 @@ final class Downloader implements DownloadListener {
     // ---------------------------------------------------------------------------------------
     // Android 4.1-6.x: our own downloader with up-to-date certificates
 
-    private void startOwn(final String url, final String userAgent, final String name, final String mime,
-                          final boolean apk) {
+    private File downloadDir() {
         File dir = Build.VERSION.SDK_INT >= 23
                 ? activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) // no permission needed
                 : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        if (dir == null) {
-            showError("Storage is not available");
-            return;
+        if (dir != null) {
+            //noinspection ResultOfMethodCallIgnored
+            dir.mkdirs();
         }
-        //noinspection ResultOfMethodCallIgnored
-        dir.mkdirs();
-        final File out = uniqueFile(dir, name);
-        final String cookie = CookieManager.getInstance().getCookie(url);
-        final boolean[] cancelled = {false};
+        return dir;
+    }
 
+    /** Shows a download progress dialog; fills {@code bar[0]} and {@code status[0]}. */
+    private AlertDialog progressDialog(String title, final boolean[] cancelled, ProgressBar[] barOut,
+                                       TextView[] statusOut) {
         int pad = dp(20);
         LinearLayout box = new LinearLayout(activity);
         box.setOrientation(LinearLayout.VERTICAL);
@@ -209,8 +210,8 @@ final class Downloader implements DownloadListener {
         status.setPadding(0, dp(10), 0, 0);
         box.addView(status);
 
-        final AlertDialog dialog = new AlertDialog.Builder(activity)
-                .setTitle(name)
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle(title)
                 .setView(box)
                 .setCancelable(false)
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -221,6 +222,26 @@ final class Downloader implements DownloadListener {
                 })
                 .show();
         status.setText(R.string.downloading);
+        barOut[0] = bar;
+        statusOut[0] = status;
+        return dialog;
+    }
+
+    private void startOwn(final String url, final String userAgent, final String name, final String mime,
+                          final boolean apk) {
+        File dir = downloadDir();
+        if (dir == null) {
+            showError("Storage is not available");
+            return;
+        }
+        final File out = uniqueFile(dir, name);
+        final String cookie = CookieManager.getInstance().getCookie(url);
+        final boolean[] cancelled = {false};
+        ProgressBar[] barRef = new ProgressBar[1];
+        TextView[] statusRef = new TextView[1];
+        final AlertDialog dialog = progressDialog(name, cancelled, barRef, statusRef);
+        final ProgressBar bar = barRef[0];
+        final TextView status = statusRef[0];
 
         new Thread(new Runnable() {
             @Override
@@ -253,6 +274,98 @@ final class Downloader implements DownloadListener {
                 }
             }
         }, "download").start();
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Updating Car Browser itself
+
+    /** Where new versions are published. The first that answers wins. */
+    static final String[] UPDATE_URLS = {
+            "https://github.com/ahmedps520-svg/car-app-android/raw/claude/awesome-wright-6m0pny/apk/CarBrowser.apk",
+            "https://github.com/ahmedps520-svg/car-app-android/raw/main/apk/CarBrowser.apk"
+    };
+
+    /**
+     * Downloads the latest Car Browser and offers to install it if it's newer. Uses the
+     * modern TLS stack ({@link Tls}), so it works on Android 4.x where the system
+     * downloader can't reach GitHub.
+     */
+    void updateSelf() {
+        if (useSystemDownloadManager()) {
+            startSystem(UPDATE_URLS[0], null, "CarBrowser-update.apk", APK_MIME, true);
+            return;
+        }
+        File dir = downloadDir();
+        if (dir == null) {
+            showError("Storage is not available");
+            return;
+        }
+        final File out = new File(dir, "CarBrowser-update.apk");
+        //noinspection ResultOfMethodCallIgnored
+        out.delete();
+        final boolean[] cancelled = {false};
+        ProgressBar[] barRef = new ProgressBar[1];
+        TextView[] statusRef = new TextView[1];
+        final AlertDialog dialog = progressDialog(activity.getString(R.string.update_title), cancelled, barRef, statusRef);
+        final ProgressBar bar = barRef[0];
+        final TextView status = statusRef[0];
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                IOException last = null;
+                boolean ok = false;
+                for (String url : UPDATE_URLS) {
+                    if (cancelled[0]) break;
+                    try {
+                        download(url, null, null, out, cancelled, bar, status);
+                        ok = true;
+                        break;
+                    } catch (IOException e) {
+                        last = e;
+                    }
+                }
+                final boolean success = ok;
+                final String error = last == null ? null : last.getMessage();
+                ui.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        dismiss(dialog);
+                        if (cancelled[0]) return;
+                        if (success) afterUpdateDownload(out);
+                        else showError(error);
+                    }
+                });
+            }
+        }, "update").start();
+    }
+
+    @SuppressWarnings("deprecation")
+    private void afterUpdateDownload(File apkFile) {
+        PackageManager pm = activity.getPackageManager();
+        PackageInfo downloaded = pm.getPackageArchiveInfo(apkFile.getAbsolutePath(), 0);
+        int current;
+        try {
+            current = pm.getPackageInfo(activity.getPackageName(), 0).versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            current = 0;
+        }
+        if (downloaded == null || !activity.getPackageName().equals(downloaded.packageName)) {
+            //noinspection ResultOfMethodCallIgnored
+            apkFile.delete();
+            showError(activity.getString(R.string.update_bad_file));
+            return;
+        }
+        if (downloaded.versionCode <= current) {
+            //noinspection ResultOfMethodCallIgnored
+            apkFile.delete();
+            new AlertDialog.Builder(activity)
+                    .setMessage(activity.getString(R.string.update_latest, downloaded.versionName))
+                    .setPositiveButton(R.string.ok, null)
+                    .show();
+            return;
+        }
+        offerInstall(activity.getString(R.string.update_ready, downloaded.versionName), Uri.fromFile(apkFile));
     }
 
     private void download(String url, String userAgent, String cookie, File out, boolean[] cancelled,

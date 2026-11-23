@@ -1,23 +1,18 @@
 package io.github.ahmedps520.carbrowser;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,26 +30,14 @@ import java.util.List;
  */
 public class AppsActivity extends Activity {
 
-    private static final class Item {
-        final CharSequence label;
-        final Drawable icon;
-        final Runnable onClick;
-        final Runnable onLongClick;
-
-        Item(CharSequence label, Drawable icon, Runnable onClick, Runnable onLongClick) {
-            this.label = label;
-            this.icon = icon;
-            this.onClick = onClick;
-            this.onLongClick = onLongClick;
-        }
-    }
-
     private int columns;
+    private Prefs prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_apps);
+        prefs = new Prefs(this);
         findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,27 +45,25 @@ public class AppsActivity extends Activity {
             }
         });
 
-        DisplayMetrics dm = getResources().getDisplayMetrics();
-        int widthDp = (int) (dm.widthPixels / dm.density);
-        columns = Math.max(3, Math.min(8, widthDp / 120));
-
-        fillGrid((LinearLayout) findViewById(R.id.settings_grid), settingsShortcuts());
+        columns = AppGrid.columns(this);
+        AppGrid.fill(this, (LinearLayout) findViewById(R.id.settings_grid), settingsShortcuts(), columns);
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final List<Item> apps = loadLaunchableApps();
-                final List<Item> disabled = loadDisabledApps();
+                final List<AppGrid.Item> apps = loadLaunchableApps();
+                final List<AppGrid.Item> disabled = loadDisabledApps();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (isFinishing()) return;
                         ((TextView) findViewById(R.id.apps_hint)).setText(R.string.apps_hint);
-                        fillGrid((LinearLayout) findViewById(R.id.apps_grid), apps);
+                        AppGrid.fill(AppsActivity.this, (LinearLayout) findViewById(R.id.apps_grid), apps, columns);
                         if (!disabled.isEmpty()) {
                             findViewById(R.id.disabled_title).setVisibility(View.VISIBLE);
                             findViewById(R.id.disabled_hint).setVisibility(View.VISIBLE);
-                            fillGrid((LinearLayout) findViewById(R.id.disabled_grid), disabled);
+                            AppGrid.fill(AppsActivity.this, (LinearLayout) findViewById(R.id.disabled_grid),
+                                    disabled, columns);
                         }
                     }
                 });
@@ -92,14 +73,21 @@ public class AppsActivity extends Activity {
 
     // ---------------------------------------------------------------------------------------
 
-    private List<Item> settingsShortcuts() {
+    private List<AppGrid.Item> settingsShortcuts() {
         Drawable icon;
         try {
             icon = getPackageManager().getApplicationIcon("com.android.settings");
         } catch (PackageManager.NameNotFoundException e) {
             icon = getResources().getDrawable(R.drawable.ic_settings);
         }
-        List<Item> list = new ArrayList<>();
+        List<AppGrid.Item> list = new ArrayList<>();
+        list.add(new AppGrid.Item(getString(R.string.cleanup_title), getResources().getDrawable(R.drawable.ic_launcher),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(new Intent(AppsActivity.this, CleanupActivity.class));
+                    }
+                }, null));
         addSetting(list, icon, R.string.s_all, new Intent(Settings.ACTION_SETTINGS));
         addSetting(list, icon, R.string.s_wifi, new Intent(Settings.ACTION_WIFI_SETTINGS));
         addSetting(list, icon, R.string.s_security, new Intent(Settings.ACTION_SECURITY_SETTINGS));
@@ -116,36 +104,34 @@ public class AppsActivity extends Activity {
         return list;
     }
 
-    private void addSetting(List<Item> list, Drawable icon, int label, final Intent intent) {
-        list.add(new Item(getString(label), icon, new Runnable() {
+    private void addSetting(List<AppGrid.Item> list, Drawable icon, int label, final Intent intent) {
+        list.add(new AppGrid.Item(getString(label), icon, new Runnable() {
             @Override
             public void run() {
-                launch(intent);
+                AppGrid.launch(AppsActivity.this, intent);
             }
         }, null));
     }
 
-    private List<Item> loadLaunchableApps() {
+    private List<AppGrid.Item> loadLaunchableApps() {
         final PackageManager pm = getPackageManager();
         Intent main = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> infos = pm.queryIntentActivities(main, 0);
-        List<Item> items = new ArrayList<>();
+        List<AppGrid.Item> items = new ArrayList<>();
         for (ResolveInfo ri : infos) {
             final String pkg = ri.activityInfo.packageName;
             if (pkg.equals(getPackageName())) continue;
             final ComponentName cn = new ComponentName(pkg, ri.activityInfo.name);
-            items.add(new Item(ri.loadLabel(pm), ri.loadIcon(pm), new Runnable() {
+            final CharSequence label = ri.loadLabel(pm);
+            items.add(new AppGrid.Item(label, ri.loadIcon(pm), new Runnable() {
                 @Override
                 public void run() {
-                    launch(new Intent(Intent.ACTION_MAIN)
-                            .addCategory(Intent.CATEGORY_LAUNCHER)
-                            .setComponent(cn)
-                            .addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
+                    AppGrid.launch(AppsActivity.this, launchIntent(cn));
                 }
             }, new Runnable() {
                 @Override
                 public void run() {
-                    openAppInfo(pkg);
+                    showAppOptions(cn, label);
                 }
             }));
         }
@@ -153,9 +139,40 @@ public class AppsActivity extends Activity {
         return items;
     }
 
-    private List<Item> loadDisabledApps() {
+    static Intent launchIntent(ComponentName cn) {
+        return new Intent(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_LAUNCHER)
+                .setComponent(cn)
+                .addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+    }
+
+    private void showAppOptions(final ComponentName cn, CharSequence label) {
+        final boolean pinned = prefs.isPinned(cn.flattenToString());
+        String[] options = {
+                getString(pinned ? R.string.home_unpin : R.string.home_pin),
+                getString(R.string.app_info)
+        };
+        new AlertDialog.Builder(this)
+                .setTitle(label)
+                .setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface d, int which) {
+                        if (which == 0) {
+                            if (pinned) prefs.unpin(cn.flattenToString());
+                            else prefs.pin(cn.flattenToString());
+                            Toast.makeText(AppsActivity.this,
+                                    pinned ? R.string.home_unpinned : R.string.home_pinned, Toast.LENGTH_SHORT).show();
+                        } else {
+                            AppGrid.openAppInfo(AppsActivity.this, cn.getPackageName());
+                        }
+                    }
+                })
+                .show();
+    }
+
+    private List<AppGrid.Item> loadDisabledApps() {
         PackageManager pm = getPackageManager();
-        List<Item> items = new ArrayList<>();
+        List<AppGrid.Item> items = new ArrayList<>();
         List<ApplicationInfo> apps;
         try {
             apps = pm.getInstalledApplications(PackageManager.GET_DISABLED_COMPONENTS);
@@ -168,105 +185,22 @@ public class AppsActivity extends Activity {
             Runnable info = new Runnable() {
                 @Override
                 public void run() {
-                    openAppInfo(pkg);
+                    AppGrid.openAppInfo(AppsActivity.this, pkg);
                 }
             };
-            items.add(new Item(ai.loadLabel(pm), ai.loadIcon(pm), info, info));
+            items.add(new AppGrid.Item(ai.loadLabel(pm), ai.loadIcon(pm), info, info));
         }
         sort(items);
         return items;
     }
 
-    private static void sort(List<Item> items) {
+    static void sort(List<AppGrid.Item> items) {
         final Collator collator = Collator.getInstance();
-        Collections.sort(items, new Comparator<Item>() {
+        Collections.sort(items, new Comparator<AppGrid.Item>() {
             @Override
-            public int compare(Item a, Item b) {
+            public int compare(AppGrid.Item a, AppGrid.Item b) {
                 return collator.compare(a.label.toString(), b.label.toString());
             }
         });
-    }
-
-    private void openAppInfo(String pkg) {
-        launch(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", pkg, null)));
-    }
-
-    private void launch(Intent intent) {
-        try {
-            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-        } catch (ActivityNotFoundException | SecurityException e) {
-            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    // ---------------------------------------------------------------------------------------
-
-    private void fillGrid(LinearLayout grid, List<Item> items) {
-        grid.removeAllViews();
-        LinearLayout row = null;
-        for (int i = 0; i < items.size(); i++) {
-            if (i % columns == 0) {
-                row = new LinearLayout(this);
-                row.setOrientation(LinearLayout.HORIZONTAL);
-                grid.addView(row);
-            }
-            row.addView(cell(items.get(i)), new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-        }
-        // Pad the last row so its cells keep the same width.
-        if (row != null) {
-            int rest = (columns - items.size() % columns) % columns;
-            for (int i = 0; i < rest; i++) {
-                row.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));
-            }
-        }
-    }
-
-    private View cell(final Item item) {
-        LinearLayout cell = new LinearLayout(this);
-        cell.setOrientation(LinearLayout.VERTICAL);
-        cell.setGravity(Gravity.CENTER_HORIZONTAL);
-        int pad = dp(8);
-        cell.setPadding(pad, dp(12), pad, dp(12));
-        TypedValue tv = new TypedValue();
-        if (getTheme().resolveAttribute(android.R.attr.selectableItemBackground, tv, true)) {
-            cell.setBackgroundResource(tv.resourceId);
-        }
-
-        ImageView icon = new ImageView(this);
-        icon.setImageDrawable(item.icon);
-        icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        cell.addView(icon, new LinearLayout.LayoutParams(dp(56), dp(56)));
-
-        TextView label = new TextView(this);
-        label.setText(item.label);
-        label.setTextColor(getResources().getColor(R.color.text));
-        label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        label.setGravity(Gravity.CENTER_HORIZONTAL);
-        label.setMaxLines(2);
-        label.setEllipsize(TextUtils.TruncateAt.END);
-        label.setPadding(0, dp(6), 0, 0);
-        cell.addView(label, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        cell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                item.onClick.run();
-            }
-        });
-        if (item.onLongClick != null) {
-            cell.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    item.onLongClick.run();
-                    return true;
-                }
-            });
-        }
-        return cell;
-    }
-
-    private int dp(int v) {
-        return Math.round(v * getResources().getDisplayMetrics().density);
     }
 }

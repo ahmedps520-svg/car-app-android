@@ -70,6 +70,9 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
     private static final int M_HELP = 9;
     private static final int M_EXIT = 10;
     private static final int M_FLOATING = 11;
+    private static final int M_CAR_HOME = 12;
+    private static final int M_CLEANUP = 13;
+    private static final int M_UPDATE = 14;
 
     private WebView web;
     private EditText urlBar;
@@ -433,6 +436,10 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
         m.add(0, M_DOWNLOADS, 0, R.string.menu_downloads);
         m.add(0, M_APPS, 0, R.string.menu_apps);
         m.add(0, M_CLEAR, 0, R.string.menu_clear);
+        m.add(0, M_CAR_HOME, 0, R.string.menu_car_home).setCheckable(true)
+                .setChecked(HomeActivity.isEnabled(this));
+        m.add(0, M_CLEANUP, 0, R.string.menu_cleanup);
+        m.add(0, M_UPDATE, 0, R.string.menu_update);
         m.add(0, M_FLOATING, 0, R.string.menu_floating).setCheckable(true).setChecked(prefs.floatingButton());
         m.add(0, M_HELP, 0, R.string.menu_help);
         m.add(0, M_EXIT, 0, R.string.menu_exit);
@@ -465,6 +472,15 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
                         return true;
                     case M_CLEAR:
                         confirmClear();
+                        return true;
+                    case M_CAR_HOME:
+                        toggleCarHome();
+                        return true;
+                    case M_CLEANUP:
+                        startActivity(new Intent(MainActivity.this, CleanupActivity.class));
+                        return true;
+                    case M_UPDATE:
+                        downloader.updateSelf();
                         return true;
                     case M_FLOATING:
                         setFloatingButton(!prefs.floatingButton());
@@ -631,6 +647,32 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
                 .setTitle(R.string.help_title)
                 .setMessage(getString(R.string.help_text, version))
                 .setPositiveButton(R.string.ok, null)
+                .show();
+    }
+
+    private void toggleCarHome() {
+        if (HomeActivity.isEnabled(this)) {
+            HomeActivity.setEnabled(this, false);
+            Toast.makeText(this, R.string.car_home_off, Toast.LENGTH_LONG).show();
+            return;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.car_home_title)
+                .setMessage(R.string.car_home_msg)
+                .setPositiveButton(R.string.car_home_on, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface d, int which) {
+                        HomeActivity.setEnabled(MainActivity.this, true);
+                        // Same as pressing Home: Android asks which home screen to use.
+                        try {
+                            startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        } catch (ActivityNotFoundException ignored) {
+                            // the user can press Home themselves
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 

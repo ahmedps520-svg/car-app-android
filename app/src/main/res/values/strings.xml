@@ -115,5 +115,44 @@
 
     <!-- Help -->
     <string name="help_title">Car Browser</string>
-    <string name="help_text">Version %1$s\n\n• Type in the top bar to search or open a website.\n• Menu → Desktop site shows the full computer version of a site (nice on wide screens).\n• Menu → Text size makes pages easier to read.\n• If the car hides Car Browser after a restart, open it from Setting → Add account → Car Browser. That also brings the floating button back.\n• Menu → Floating button puts a Car Browser button over the car\'s own screens.\n• The grid button opens every app on this screen, including ones the car hides, plus shortcuts into Android settings.\n• If a heavy site (like YouTube) doesn\'t work here, tap \"Get Firefox\" on the home page. It installs a separate browser with a newer engine.\n\nOnly use the browser while parked.</string>
+    <string name="help_text">Version %1$s\n\n• Type in the top bar to search or open a website.\n• Menu → Desktop site shows the full computer version of a site (nice on wide screens).\n• Menu → Text size makes pages easier to read.\n• If the car hides Car Browser after a restart, open it from Setting → Add account → Car Browser. That also brings the floating button back.\n• Menu → Car Home screen makes a light home screen that starts with the car.\n• Menu → Clean up apps helps switch off apps you never use.\n• Menu → Update Car Browser gets the newest version in one tap.\n• Menu → Floating button puts a Car Browser button over the car\'s own screens.\n• The grid button opens every app on this screen, including ones the car hides, plus shortcuts into Android settings.\n• If a heavy site (like YouTube) doesn\'t work here, tap \"Get Firefox\" on the home page. It installs a separate browser with a newer engine.\n\nOnly use the browser while parked.</string>
+    <!-- Car Home -->
+    <string name="car_home_name">Car Home</string>
+    <string name="menu_car_home">Car Home screen</string>
+    <string name="menu_cleanup">Clean up apps</string>
+    <string name="menu_update">Update Car Browser</string>
+    <string name="car_home_title">Use Car Home?</string>
+    <string name="car_home_msg">Car Home becomes the screen your car shows when it starts and whenever you press Home. It\'s light: a clock, a search box and only the apps you pin. The car\'s top bar and climate controls stay as they are.\n\nAfter you tap Turn on, Android asks which home screen to use. Choose Car Home, then:\n• Just once, to try it\n• Always, to keep it\n\nThe car\'s own home screen stays one tap away (the \"Car\'s own home screen\" tile). To switch back completely, come here and turn Car Home off.</string>
+    <string name="car_home_on">Turn on</string>
+    <string name="car_home_off">Car Home is off. Press Home to go back to the car\'s own home screen.</string>
+    <string name="home_all_apps">All apps</string>
+    <string name="home_car_original">Car\'s own home screen</string>
+    <string name="home_hint">Long-press any app in All apps to add it here. To stop using Car Home: open Car Browser → Menu → Car Home screen.</string>
+    <string name="home_pin">Add to Car Home</string>
+    <string name="home_unpin">Remove from Car Home</string>
+    <string name="home_pinned">Added to Car Home</string>
+    <string name="home_unpinned">Removed from Car Home</string>
+    <string name="app_info">App info</string>
+
+    <!-- Clean up -->
+    <string name="cleanup_title">Clean up apps</string>
+    <string name="cleanup_memory">Free memory: %1$s of %2$s</string>
+    <string name="cleanup_intro">Switching off apps you never use stops them running in the background and frees memory. Tap an app; Android\'s page for it opens; press Disable. Nothing is deleted, and you can turn any of them back on here.</string>
+    <string name="cleanup_safe">Usually safe to switch off (%1$d)</string>
+    <string name="cleanup_none">Nothing obvious to switch off.</string>
+    <string name="cleanup_other">Other apps (%1$d)</string>
+    <string name="cleanup_other_hint">Only switch these off if you know what they are.</string>
+    <string name="cleanup_off">Switched off (%1$d)</string>
+    <string name="cleanup_off_hint">Tap one, then press Enable, to turn it back on.</string>
+    <string name="cleanup_kept">%1$d apps the car needs (radio, climate, camera, Bluetooth, keyboard, home screen and Android itself) are hidden from this list so they can\'t be switched off by mistake.</string>
+    <string name="cleanup_toast_disable">Press \"Disable\". If there\'s no Disable button, \"Force stop\" closes it for now.</string>
+    <string name="cleanup_toast_enable">Press \"Enable\" to turn it back on</string>
+    <string name="cleanup_unknown_warning">Car Browser doesn\'t recognise this app. Only switch it off if you know what it does.\n\nIf something in the car stops working afterwards, come back to Clean up apps. It will be listed under \"Switched off\", and you can turn it back on.</string>
+    <string name="cleanup_continue">Open its page</string>
+
+    <!-- Update -->
+    <string name="update_title">Updating Car Browser</string>
+    <string name="update_bad_file">The downloaded file isn\'t Car Browser.</string>
+    <string name="update_latest">You already have the latest version (%1$s).</string>
+    <string name="update_ready">Car Browser %1$s</string>
 </resources>

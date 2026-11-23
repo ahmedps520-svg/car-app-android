@@ -216,6 +216,40 @@ buttons, reversing camera or display.
   car app such as navigation or radio.
 * **Location:** map sites can use the car's GPS. You're asked per site.
 
+### Car Home: a light home screen that starts with the car (optional)
+
+*⋮ → Car Home screen → Turn on.* Android then asks which home screen to use: choose
+**Car Home**, and either **Just once** (to try it) or **Always** (to keep it). From then on
+it's what the car shows at start-up and whenever you press Home, so the car's launcher can't
+hide Car Browser any more. It's just a clock, a search box, Car Browser, the apps you pin,
+*All apps*, *Clean up apps*, Settings, and a **Car's own home screen** tile that opens the
+original one.
+
+* **Pin an app:** grid button → long-press the app → *Add to Car Home*.
+* **Switch back:** *⋮ → Car Home screen* again turns it off, and Home goes back to the
+  car's launcher.
+* The car's top bar and climate controls aren't part of the launcher, so they stay.
+  It's a home screen, not a full-screen overlay; an overlay would cover the A/C controls.
+
+### Clean up apps (switch off bloatware)
+
+*⋮ → Clean up apps* (also on Car Home and the grid screen) lists preinstalled apps that are
+usually safe to switch off (email, calendar, clock, live wallpapers, Chinese preinstalls…),
+then "other" apps, and shows free memory. Tapping one opens Android's page for it, where you
+press **Disable**. Nothing is deleted, and switched-off apps are listed at the bottom so you
+can turn them back on.
+
+Anything that looks car- or system-critical (radio, CAN-bus/climate, camera, Bluetooth,
+keyboard, launchers, maps, media, Android itself) is **hidden** from the list, so it can't be
+switched off by mistake. Android only lets root or ADB disable apps silently. That's why each
+one is a tap on Android's own button.
+
+### Updating Car Browser
+
+*⋮ → Update Car Browser* downloads the newest version from this page and offers to install
+it. It only does that if the download is newer. You don't need a laptop, iPhone server or USB
+stick for updates.
+
 ### Apps & settings (grid button)
 
 This screen shows **every app on the car screen, including ones the car's home
@@ -320,6 +354,8 @@ settings. Turn on **automatic date & time** if your unit has it.
 |---|---|
 | `MainActivity.java` | Browser screen, toolbar, menu, full-screen video, location prompts |
 | `HomePage.java` | Generates the start page (ES5/old-CSS only, for the 2014 engine) |
+| `HomeActivity.java` | Optional "Car Home" home screen (HOME alias, off until enabled) |
+| `CleanupActivity.java` / `Bloat.java` | Guided bloatware switch-off; `Bloat` hides car-critical apps |
 | `AppsActivity.java` | All apps (including hidden and disabled ones) plus Android settings shortcuts |
 | `SslHelper.java` / `Tls.java` | Re-checks certificates the old WebView rejects, using Mozilla's root list and Conscrypt |
 | `FloatingButtonService.java` / `BootReceiver.java` | Optional floating button over the car's launcher (which may hide the app), restored after reboot |

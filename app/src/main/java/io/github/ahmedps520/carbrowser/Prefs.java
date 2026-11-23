@@ -28,6 +28,7 @@ final class Prefs {
     private static final String KEY_DESKTOP = "desktop";
     private static final String KEY_ENGINE = "engine";
     private static final String KEY_MIGRATION = "migration";
+    private static final String KEY_PINNED = "pinned_apps";
     private static final String KEY_FLOATING = "floating_button";
     private static final String KEY_FLOATING_ASKED = "floating_button_asked";
     private static final String KEY_BUBBLE_X = "bubble_x";
@@ -162,6 +163,41 @@ final class Prefs {
 
     void setEngine(String engine) {
         sp.edit().putString(KEY_ENGINE, engine).apply();
+    }
+
+    // ---- Car Home pinned apps (flattened ComponentNames) ----
+
+    List<String> pinned() {
+        List<String> list = new ArrayList<>();
+        try {
+            JSONArray arr = new JSONArray(sp.getString(KEY_PINNED, "[]"));
+            for (int i = 0; i < arr.length(); i++) list.add(arr.getString(i));
+        } catch (JSONException ignored) {
+            // corrupt: treat as empty
+        }
+        return list;
+    }
+
+    boolean isPinned(String component) {
+        return pinned().contains(component);
+    }
+
+    void pin(String component) {
+        List<String> list = pinned();
+        if (!list.contains(component)) list.add(component);
+        savePinned(list);
+    }
+
+    void unpin(String component) {
+        List<String> list = pinned();
+        list.remove(component);
+        savePinned(list);
+    }
+
+    private void savePinned(List<String> list) {
+        JSONArray arr = new JSONArray();
+        for (String c : list) arr.put(c);
+        sp.edit().putString(KEY_PINNED, arr.toString()).apply();
     }
 
     // ---- Floating button ----
