@@ -89,6 +89,7 @@ final class AppGrid {
         label.setMaxLines(2);
         label.setEllipsize(TextUtils.TruncateAt.END);
         label.setPadding(0, dp(a, 6), 0, 0);
+        label.setShadowLayer(6f, 0f, 2f, 0xCC000000); // readable on the Car Home photo
         cell.addView(label, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 

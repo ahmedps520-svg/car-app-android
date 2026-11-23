@@ -221,7 +221,7 @@ buttons, reversing camera or display.
 *⋮ → Car Home screen → Turn on.* Android then asks which home screen to use: choose
 **Car Home**, and either **Just once** (to try it) or **Always** (to keep it). From then on
 it's what the car shows at start-up and whenever you press Home, so the car's launcher can't
-hide Car Browser any more. It's just a clock, a search box, Car Browser, the apps you pin,
+hide Car Browser any more. It opens with a short **intro** (logo and a greeting) each time the car starts or wakes up; tap to skip it. The background is a lightly blurred photo (`app/src/main/res/drawable-nodpi/wallpaper.jpg`; replace that file to change it). It's just a clock, a search box, Car Browser, the apps you pin,
 *All apps*, *Clean up apps*, Settings, and a **Car's own home screen** tile that opens the
 original one.
 
@@ -275,6 +275,10 @@ from 2014 and can't be updated. That means:
 * ⚠️ Heavy modern sites (**YouTube**, big web apps) may be slow, look basic, or say
   "browser not supported".
 * ❌ Netflix, Spotify Web and other sites that need copy-protection (DRM) won't play.
+* ❌ **YouTube and Discord** need a far newer browser than any that runs on Android 4.4, and
+  their apps need Android 7 or newer. No app on this screen can fix that. The workable way
+  is to show your phone on the car screen. If the car's **PhoneLink** app supports iPhone
+  screen mirroring (AirPlay), YouTube and Discord run on the phone and appear on the car screen.
 
 **Searching uses Bing by default.** Since 2025 Google Search needs modern JavaScript,
 so on Android 4.4 it only shows a blank "having trouble accessing Google Search?" page.

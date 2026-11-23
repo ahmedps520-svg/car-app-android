@@ -9,24 +9,33 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +52,17 @@ public class HomeActivity extends Activity {
 
     private static final String ALIAS = ".HomeAlias";
 
+    /** Intro plays once per app start, and again after the car has been asleep. */
+    private static boolean introShownThisProcess;
+    private static long stoppedElapsed = -1;
+    private static long stoppedUptime = -1;
+    private static final long SLEEP_FOR_INTRO_MS = 60 * 1000;
+
     private final Handler handler = new Handler();
+    private View intro;
+    private ImageView introLogo;
+    private TextView introTitle;
+    private TextView introGreeting;
     private TextView clock;
     private TextView date;
     private LinearLayout grid;
@@ -97,8 +116,19 @@ public class HomeActivity extends Activity {
         prefs = new Prefs(this);
         int pad = AppGrid.dp(this, 20);
 
+        FrameLayout root = new FrameLayout(this);
+        root.setBackgroundColor(getResources().getColor(R.color.bg));
+        ImageView wallpaper = new ImageView(this);
+        wallpaper.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        wallpaper.setImageBitmap(loadWallpaper());
+        root.addView(wallpaper, matchParent());
+        // Darker toward the bottom so white text stays readable on the photo.
+        View shade = new View(this);
+        shade.setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0x66000000, 0x55000000, 0x99000000}));
+        root.addView(shade, matchParent());
+
         ScrollView scroll = new ScrollView(this);
-        scroll.setBackgroundColor(getResources().getColor(R.color.bg));
         scroll.setFillViewport(true);
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
@@ -153,13 +183,143 @@ public class HomeActivity extends Activity {
         hint.setPadding(0, AppGrid.dp(this, 24), 0, 0);
         col.addView(hint);
 
-        setContentView(scroll);
+        root.addView(scroll, matchParent());
+        intro = buildIntro();
+        root.addView(intro, matchParent());
+        setContentView(root);
+    }
+
+    private static FrameLayout.LayoutParams matchParent() {
+        return new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
+    }
+
+    /** The photo, decoded at 16-bit colour to keep memory low on old head units. */
+    private Bitmap loadWallpaper() {
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inPreferredConfig = Bitmap.Config.RGB_565;
+        o.inScaled = false;
+        try {
+            return BitmapFactory.decodeResource(getResources(), R.drawable.wallpaper, o);
+        } catch (OutOfMemoryError e) {
+            return null; // plain dark background instead
+        }
+    }
+
+    // ---- intro ----
+
+    private View buildIntro() {
+        FrameLayout box = new FrameLayout(this);
+        box.setBackgroundColor(0xE60B0D12);
+        box.setClickable(true); // swallow taps; a tap skips the intro
+        box.setVisibility(View.GONE);
+        box.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideIntro();
+            }
+        });
+        LinearLayout col = new LinearLayout(this);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        introLogo = new ImageView(this);
+        introLogo.setImageResource(R.drawable.ic_launcher);
+        col.addView(introLogo, new LinearLayout.LayoutParams(AppGrid.dp(this, 128), AppGrid.dp(this, 128)));
+        introTitle = text(40, R.color.text);
+        introTitle.setText(R.string.car_home_name);
+        introTitle.setGravity(Gravity.CENTER_HORIZONTAL);
+        introTitle.setPadding(0, AppGrid.dp(this, 20), 0, 0);
+        col.addView(introTitle);
+        introGreeting = text(22, R.color.text_dim);
+        introGreeting.setGravity(Gravity.CENTER_HORIZONTAL);
+        introGreeting.setPadding(0, AppGrid.dp(this, 10), 0, 0);
+        col.addView(introGreeting);
+
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
+        box.addView(col, lp);
+        return box;
+    }
+
+    private void showIntro() {
+        introShownThisProcess = true;
+        handler.removeCallbacks(hideIntroLater);
+        intro.animate().cancel();
+        intro.setAlpha(1f);
+        intro.setVisibility(View.VISIBLE);
+
+        introGreeting.setText(greeting());
+        introLogo.setAlpha(0f);
+        introLogo.setScaleX(0.6f);
+        introLogo.setScaleY(0.6f);
+        introTitle.setAlpha(0f);
+        introTitle.setTranslationY(AppGrid.dp(this, 18));
+        introGreeting.setAlpha(0f);
+
+        introLogo.animate().alpha(1f).scaleX(1f).scaleY(1f).setStartDelay(0).setDuration(700)
+                .setInterpolator(new OvershootInterpolator(1.2f)).start();
+        introTitle.animate().alpha(1f).translationY(0).setStartDelay(350).setDuration(600)
+                .setInterpolator(new DecelerateInterpolator()).start();
+        introGreeting.animate().alpha(1f).setStartDelay(800).setDuration(600).start();
+        handler.postDelayed(hideIntroLater, 2900);
+    }
+
+    private final Runnable hideIntroLater = new Runnable() {
+        @Override
+        public void run() {
+            hideIntro();
+        }
+    };
+
+    private void hideIntro() {
+        handler.removeCallbacks(hideIntroLater);
+        if (intro.getVisibility() != View.VISIBLE) return;
+        intro.animate().cancel();
+        intro.animate().alpha(0f).setStartDelay(0).setDuration(500).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                intro.setVisibility(View.GONE);
+            }
+        }).start();
+    }
+
+    private String greeting() {
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        int res;
+        if (hour >= 5 && hour < 12) res = R.string.intro_morning;
+        else if (hour >= 12 && hour < 17) res = R.string.intro_afternoon;
+        else if (hour >= 17 && hour < 22) res = R.string.intro_evening;
+        else res = R.string.intro_night;
+        return getString(res);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Car head units "sleep" when the car is off. Deep sleep shows up as a gap between
+        // elapsed time (counts sleep) and uptime (doesn't), so replay the intro after one.
+        boolean slept = false;
+        if (stoppedElapsed >= 0) {
+            long elapsed = SystemClock.elapsedRealtime() - stoppedElapsed;
+            long awake = SystemClock.uptimeMillis() - stoppedUptime;
+            slept = elapsed - awake > SLEEP_FOR_INTRO_MS;
+        }
+        if (!introShownThisProcess || slept) showIntro();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stoppedElapsed = SystemClock.elapsedRealtime();
+        stoppedUptime = SystemClock.uptimeMillis();
     }
 
     private TextView text(int sp, int color) {
         TextView t = new TextView(this);
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
         t.setTextColor(getResources().getColor(color));
+        t.setShadowLayer(6f, 0f, 2f, 0xCC000000);
         return t;
     }
 
