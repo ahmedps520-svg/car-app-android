@@ -94,6 +94,18 @@
                 android:value="Floating shortcut that opens the browser on car head units whose launcher hides apps" />
         </service>
 
+        <!-- "Setting -> Add account -> Car Browser" opens the app (see OpenFromSettingsService). -->
+        <service
+            android:name=".OpenFromSettingsService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
         <receiver
             android:name=".BootReceiver"
             android:exported="true">

@@ -182,6 +182,11 @@ buttons, reversing camera or display.
   floats over the car's screens. Tap it to open Car Browser; drag it to move it. You can
   turn it off in *⋮ → Floating button*. It also comes back after the car restarts.
 * Look for **Car Browser** (blue globe icon) in the car screen's app list.
+* **The car hides it again after a restart?** Open **Setting → Add account → Car Browser**.
+  It opens the app; no account is created. Your car's Setting app is always on the dock,
+  so this way in can't be hidden. It also brings the floating button back. Many of these
+  cars close every app they don't know when you switch the car off, so the button doesn't
+  survive that on its own.
 * With a USB keyboard, **Windows key + B** opens it too. The first time, choose
   *Car Browser* and *Always*.
 * **Car's home screen doesn't show it?** Copy `install/open-car-browser.html` to the USB
