@@ -237,10 +237,14 @@ from 2014 and can't be updated. That means:
   "browser not supported".
 * ❌ Netflix, Spotify Web and other sites that need copy-protection (DRM) won't play.
 
-**For heavy sites, tap "Get Firefox" on the home page.** It downloads **Firefox 68.11**
-from Mozilla's official archive. That's the last Firefox that runs on Android 4.x, and
-it has its own, much newer engine. It no longer gets security updates, so don't use
-it (or this car screen) for banking.
+**Searching uses Bing by default.** Since 2025 Google Search needs modern JavaScript,
+so on Android 4.4 it only shows a blank "having trouble accessing Google Search?" page.
+Bing (or DuckDuckGo) still works; switch in *⋮ → Search engine*.
+
+**"Get Firefox"** on the home page installs **Firefox 68.11**, the last Firefox for
+Android 4.x, from Mozilla's official archive. It has a newer engine, but on slow units
+like the Rockchip PX3 it can feel slower than Car Browser, and Google Search doesn't work
+in it either. It no longer gets security updates, so don't use it for banking.
 
 ### Certificates and "Security warning"
 

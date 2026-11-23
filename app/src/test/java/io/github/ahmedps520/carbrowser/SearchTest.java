@@ -42,6 +42,13 @@ public class SearchTest {
     }
 
     @Test
+    public void defaultEngineWorksOnOldScreens() {
+        // Google Search needs modern JavaScript since 2025; old WebViews get a blank page.
+        assertEquals(Search.BING, Search.DEFAULT);
+        assertEquals("https://www.bing.com/search?q=discord", Search.toUrl("discord", Search.DEFAULT));
+    }
+
+    @Test
     public void otherEngines() {
         assertEquals("https://html.duckduckgo.com/html/?q=news", Search.toUrl("news", Search.DUCKDUCKGO));
         assertEquals("https://www.bing.com/search?q=news", Search.toUrl("news", Search.BING));

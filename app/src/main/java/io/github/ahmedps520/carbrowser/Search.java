@@ -12,8 +12,15 @@ final class Search {
     static final String DUCKDUCKGO = "duckduckgo";
     static final String BING = "bing";
 
-    static final String[] KEYS = {GOOGLE, DUCKDUCKGO, BING};
-    static final String[] NAMES = {"Google", "DuckDuckGo", "Bing"};
+    /**
+     * Default engine. Since 2025 Google Search needs modern JavaScript, so on Android 4.x
+     * WebViews (Chrome 30-33) it only shows a "having trouble?" page. Bing still returns
+     * server-rendered results there.
+     */
+    static final String DEFAULT = BING;
+
+    static final String[] KEYS = {BING, DUCKDUCKGO, GOOGLE};
+    static final String[] NAMES = {"Bing", "DuckDuckGo", "Google (needs a newer screen)"};
 
     private static final Pattern HAS_SCHEME =
             Pattern.compile("^(https?|ftp|file|content)://.*", Pattern.CASE_INSENSITIVE);
