@@ -383,6 +383,26 @@ public class HomeActivity extends Activity {
             }));
         }
 
+        // YouTube (SmartTube) and Discord (Discofi) show up by themselves once installed.
+        for (String[] pkgs : new String[][]{CarApps.YOUTUBE_PACKAGES, CarApps.DISCORD_PACKAGES}) {
+            final String pkg = CarApps.installed(this, pkgs);
+            if (pkg == null) continue;
+            final Intent launch = pm.getLaunchIntentForPackage(pkg);
+            if (launch == null || launch.getComponent() == null
+                    || prefs.isPinned(launch.getComponent().flattenToString())) continue;
+            try {
+                ApplicationInfoHolder info = new ApplicationInfoHolder(pm, pkg);
+                list.add(new AppGrid.Item(info.label, info.icon, new Runnable() {
+                    @Override
+                    public void run() {
+                        AppGrid.launch(HomeActivity.this, new Intent(launch));
+                    }
+                }, null));
+            } catch (PackageManager.NameNotFoundException ignored) {
+                // just uninstalled
+            }
+        }
+
         list.add(new AppGrid.Item(getString(R.string.home_all_apps), getResources().getDrawable(R.drawable.ic_apps),
                 new Runnable() {
                     @Override
@@ -428,6 +448,17 @@ public class HomeActivity extends Activity {
             }
         }, null));
         return list;
+    }
+
+    private static final class ApplicationInfoHolder {
+        final CharSequence label;
+        final Drawable icon;
+
+        ApplicationInfoHolder(PackageManager pm, String pkg) throws PackageManager.NameNotFoundException {
+            android.content.pm.ApplicationInfo ai = pm.getApplicationInfo(pkg, 0);
+            label = ai.loadLabel(pm);
+            icon = ai.loadIcon(pm);
+        }
     }
 
     private void confirmUnpin(final String flat, CharSequence label) {

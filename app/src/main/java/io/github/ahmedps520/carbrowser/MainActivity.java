@@ -339,6 +339,10 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
         String scheme = uri.getScheme();
         if (scheme == null) return false;
         scheme = scheme.toLowerCase(Locale.US);
+        if ((scheme.equals("http") || scheme.equals("https")) && CarApps.isYouTubeUrl(uri)
+                && CarApps.openYouTube(this, uri)) {
+            return true; // YouTube's site can't play here; SmartTube can
+        }
         switch (scheme) {
             case "http":
             case "https":

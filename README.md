@@ -275,10 +275,21 @@ from 2014 and can't be updated. That means:
 * ⚠️ Heavy modern sites (**YouTube**, big web apps) may be slow, look basic, or say
   "browser not supported".
 * ❌ Netflix, Spotify Web and other sites that need copy-protection (DRM) won't play.
-* ❌ **YouTube and Discord** need a far newer browser than any that runs on Android 4.4, and
-  their apps need Android 7 or newer. No app on this screen can fix that. The workable way
-  is to show your phone on the car screen. If the car's **PhoneLink** app supports iPhone
-  screen mirroring (AirPlay), YouTube and Discord run on the phone and appear on the car screen.
+* ❌ **YouTube's and Discord's websites** need a far newer browser than any that runs on
+  Android 4.4, and their official apps need Android 7 or newer. Use these instead (tiles on
+  Car Browser's home page; nothing to type):
+  * **Get YouTube** installs [SmartTube](https://github.com/yuliskov/SmartTube), an
+    open-source YouTube app for old Android TV boxes (Android 4.3+). It's built for TV
+    remotes, but taps and a USB keyboard's arrows + Enter work too. On older chips, set
+    *Settings → Player → Video formats* to **AVC** and pick **720p or lower** so videos play
+    smoothly. YouTube links in Car Browser open in it automatically.
+  * **Get Discord** installs [Discofi](https://github.com/gtrxAC/Discofi-Android), an
+    open-source Discord client for Android below 5.0. It has servers, DMs, sending messages
+    and notifications; it has no voice chat or sending pictures yet. It's unofficial, so
+    follow its advice to avoid account restrictions: choose the **Direct** connection and log
+    in with **email and password**. If you get a CAPTCHA, turn on 2-factor authentication and
+    try again on a Wi‑Fi network you've used Discord on before.
+  * Both show up on Car Home by themselves once installed.
 
 **Searching uses Bing by default.** Since 2025 Google Search needs modern JavaScript,
 so on Android 4.4 it only shows a blank "having trouble accessing Google Search?" page.

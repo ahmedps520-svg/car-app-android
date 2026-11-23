@@ -106,12 +106,15 @@ final class HomePage {
         h.append("<h2>Tools</h2><div class=\"grid\">");
         tile(h, "Apps & Settings", "carbrowser://apps", "#546e7a", svg(ICON_APPS));
         tile(h, "Edit bookmarks", "carbrowser://bookmarks", "#546e7a", svg(ICON_STAR));
+        tile(h, "Get YouTube", CarApps.YOUTUBE_APK, "#e53935", svg(ICON_DOWNLOAD));
+        tile(h, "Get Discord", CarApps.DISCORD_APK, "#5865f2", svg(ICON_DOWNLOAD));
         tile(h, "Get Firefox", FIREFOX_APK, "#e66000", svg(ICON_DOWNLOAD));
         tile(h, "Help", "carbrowser://help", "#546e7a", "?");
         h.append("</div>");
 
-        h.append("<p class=\"note\">Tip: if a big site doesn’t work here, tap <b>Get Firefox</b> ")
-                .append("to install a browser with a newer engine.<br>Please only browse while parked.</p>");
+        h.append("<p class=\"note\">YouTube and Discord websites can’t run on this screen. ")
+                .append("Tap <b>Get YouTube</b> or <b>Get Discord</b> to install apps made for older ")
+                .append("Android.<br>Please only use them while parked.</p>");
 
         // Send the search box to the app so it can decide between "open address" and "search".
         h.append("</div><script>(function(){var f=document.getElementById('f'),")
