@@ -340,6 +340,7 @@ settings. Turn on **automatic date & time** if your unit has it.
 | **There was a problem parsing the package** | The file got damaged while copying. Copy it to the USB stick again. |
 | **adb: failed to connect** | Same Wi‑Fi? Correct IP? Turn on Developer options → USB debugging (step B). |
 | **adb: unauthorized** | Accept the *Allow USB debugging?* prompt on the car screen and try again. |
+| **Car Browser vanished after a restart (not in Add account either)** | Versions up to 1.6 could be installed on "SD card" storage. Setting → Apps → find **Car Browser** (check the *On SD card* tab) → **Move to tablet**. Version 1.7+ always installs on the car's own storage. |
 | **"Can't reach the internet"** | Check the car screen is connected to Wi‑Fi (or your hotspot) and that the hotspot has data. |
 | **Every site shows a security error** | The car's clock is probably wrong. Fix *Date & time*. |
 | **A site doesn't work or is blank** | Try *⋮ → Desktop site*, or use **Get Firefox**. |

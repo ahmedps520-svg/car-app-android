@@ -9,6 +9,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -147,6 +148,7 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
             else loadHome();
         }
         if (clockLooksWrong()) onClockProblem();
+        if (isOnSdCard()) askToMoveToInternal();
         if (!prefs.floatingButtonAsked()) askFloatingButton();
     }
 
@@ -677,6 +679,29 @@ public class MainActivity extends Activity implements SslHelper.ClockProblemList
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
+    /**
+     * Older versions allowed installing on "SD card" storage. On car screens that makes the
+     * app vanish after every restart (until that storage loads), and it can't be the home
+     * screen or appear in Setting -> Add account in the meantime.
+     */
+    private boolean isOnSdCard() {
+        return (getApplicationInfo().flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0;
+    }
+
+    private void askToMoveToInternal() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.move_title)
+                .setMessage(R.string.move_msg)
+                .setPositiveButton(R.string.move_open, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface d, int which) {
+                        AppGrid.openAppInfo(MainActivity.this, getPackageName());
+                    }
+                })
+                .setNegativeButton(R.string.later, null)
                 .show();
     }
 

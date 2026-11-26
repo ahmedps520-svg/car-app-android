@@ -154,6 +154,11 @@
     <string name="cleanup_unknown_warning">Car Browser doesn\'t recognise this app. Only switch it off if you know what it does.\n\nIf something in the car stops working afterwards, come back to Clean up apps. It will be listed under \"Switched off\", and you can turn it back on.</string>
     <string name="cleanup_continue">Open its page</string>
 
+    <!-- Install location -->
+    <string name="move_title">Move Car Browser to the car\'s storage</string>
+    <string name="move_msg">Car Browser is stored on the SD card, so it disappears after every restart and Car Home can\'t start with the car.\n\nTap Open, then press \"Move to tablet\" (or \"Move to device storage\").</string>
+    <string name="move_open">Open</string>
+
     <!-- Update -->
     <string name="update_title">Updating Car Browser</string>
     <string name="update_bad_file">The downloaded file isn\'t Car Browser.</string>
