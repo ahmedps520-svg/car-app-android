@@ -54,6 +54,7 @@ public class HomeActivity extends Activity {
 
     /** Intro plays once per app start, and again after the car has been asleep. */
     private static boolean introShownThisProcess;
+    private static boolean sdCheckDone;
     private static long stoppedElapsed = -1;
     private static long stoppedUptime = -1;
     private static final long SLEEP_FOR_INTRO_MS = 60 * 1000;
@@ -331,6 +332,43 @@ public class HomeActivity extends Activity {
         handler.removeCallbacks(tick);
         tick.run();
         AppGrid.fill(this, grid, tiles(), AppGrid.columns(this));
+        if (!sdCheckDone) {
+            sdCheckDone = true;
+            // After the intro, so the two don't overlap.
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isFinishing()) warnAboutAppsOnSdCard();
+                }
+            }, 3600);
+        }
+    }
+
+    /**
+     * Apps on "SD card" storage vanish after a restart on these car screens (until that
+     * storage loads, which may be never). Offer to move each one to the car's own storage.
+     */
+    private void warnAboutAppsOnSdCard() {
+        final PackageManager pm = getPackageManager();
+        final List<String> pkgs = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        for (android.content.pm.ApplicationInfo ai : pm.getInstalledApplications(0)) {
+            if ((ai.flags & android.content.pm.ApplicationInfo.FLAG_EXTERNAL_STORAGE) == 0) continue;
+            pkgs.add(ai.packageName);
+            names.add(String.valueOf(ai.loadLabel(pm)));
+        }
+        if (pkgs.isEmpty()) return;
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.sd_apps_title)
+                .setItems(names.toArray(new String[0]), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface d, int which) {
+                        Toast.makeText(HomeActivity.this, R.string.sd_apps_toast, Toast.LENGTH_LONG).show();
+                        AppGrid.openAppInfo(HomeActivity.this, pkgs.get(which));
+                    }
+                })
+                .setNegativeButton(R.string.later, null)
+                .show();
     }
 
     @Override

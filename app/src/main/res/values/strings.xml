@@ -158,6 +158,8 @@
     <string name="move_title">Move Car Browser to the car\'s storage</string>
     <string name="move_msg">Car Browser is stored on the SD card, so it disappears after every restart and Car Home can\'t start with the car.\n\nTap Open, then press \"Move to tablet\" (or \"Move to device storage\").</string>
     <string name="move_open">Open</string>
+    <string name="sd_apps_title">These apps will vanish when the car restarts. Tap each one, then \"Move to tablet\":</string>
+    <string name="sd_apps_toast">Press \"Move to tablet\" (or \"Move to device storage\")</string>
 
     <!-- Update -->
     <string name="update_title">Updating Car Browser</string>
